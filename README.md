@@ -1,133 +1,120 @@
-# Instalador automático de DeepSeek Harness (Windows)
+# Instalador automático de DeepSeek Harness (Linux)
 
-Instalador ejecutable para Windows que instala **DeepSeek Harness (`dsh`)** — el
-harness de agentes de IA de [DeepSeek AI](https://deepseek.com/harness) — y
-siempre deja la **última versión disponible**.
+Instalador para **Linux** que instala [DeepSeek Harness (`dsh`)](https://github.com/deepseek-ai/deepseek-harness)
+— el harness de agentes de IA de DeepSeek AI — y siempre deja la **última
+versión disponible**.
 
 > DeepSeek Harness es el CLI oficial `@deepseek-ai/dsh` publicado en npm. Se
 > ejecuta como interfaz web con `dsh web` (por defecto en
-> `http://127.0.0.1:3080`).
+> `http://127.0.0.1:3080`). En Linux el paquete ya incluye **todos los binarios
+> nativos precompilados** (node-pty, koffi, sharp, sherpa-onnx…), por lo que no
+> hace falta compilador ni `sudo`.
 
 ## Qué hace el instalador
 
-Al ejecutar el `.exe` (o el script) se realiza, de forma automática:
+Al ejecutar `install-dsh.sh` se realiza, de forma automática:
 
-1. **Comprueba Node.js.** Si no está instalado o es anterior a 22.0, descarga e
-   instala silenciosamente la **última versión LTS** desde `nodejs.org`
-   (x64 o arm64 según tu equipo).
-2. **Instala la última versión de DeepSeek Harness** ejecutando
+1. **Comprueba Node.js.** Si no está instalado o es anterior a 18, descarga e
+   instala la **última versión LTS** de Node en `~/.local` (sin `sudo`, sirve
+   para cualquier distribución y arquitectura x64/arm64).
+2. **Instala la última versión de DeepSeek Harness** con
    `npm install -g @deepseek-ai/dsh@latest`. El tag `@latest` garantiza que
    siempre se obtenga la versión más reciente publicada por DeepSeek.
-3. **Crea accesos directos:**
-   - `DeepSeek Harness` (menú Inicio y escritorio) → abre `dsh web`.
-   - `Actualizar DeepSeek Harness` → vuelve a instalar la última versión.
-   - `Desinstalar DeepSeek Harness` → desinstala el CLI.
-
-El instalador se ejecuta con permisos de administrador (UAC), necesarios para
-instalar Node.js a nivel de sistema y escribir en el prefijo global de npm.
+3. **Crea accesos directos y ayudantes:**
+   - `deepseek-harness` → lanzador que abre `dsh web`.
+   - `dsh-update` → actualiza a la última versión.
+   - `dsh-uninstall` → desinstala DeepSeek Harness.
+   - Entrada de escritorio `DeepSeek Harness` en el menú de aplicaciones.
 
 ## Cómo usarlo
 
-### Opción A — Ejecutable ya compilado (recomendado)
+### Opción A — One-liner (recomendado)
 
-Descarga uno de los `.exe` de la carpeta `dist/` y haz doble clic:
+Copia y pega una sola línea en la terminal de tu Linux:
 
-| Archivo | Plataforma |
-| --- | --- |
-| `dist/DeepSeek-Harness-Setup-x64.exe` | Windows 10/11 de 64 bits (la mayoría) |
-| `dist/DeepSeek-Harness-Setup-arm64.exe` | Windows 10/11 en ARM64 |
-
-> **Nota de SmartScreen:** al ser un instalador sin firma digital, Windows puede
-> mostrar «Protegió su PC». Pulsa **Más información → Ejecutar de todos modos**.
-
-### Opción B — Script PowerShell / .cmd (sin compilar)
-
-Si prefieres inspeccionar el código antes de ejecutarlo:
-
-```bat
-install-dsh.cmd
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/NeriVice/deepseek-harness-installer/main/install-dsh.sh)
 ```
 
-o directamente:
+### Opción B — Descargar el script y ejecutarlo
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File installer\install-dsh.ps1
+```bash
+curl -fsSL -o install-dsh.sh https://raw.githubusercontent.com/NeriVice/deepseek-harness-installer/main/install-dsh.sh
+bash install-dsh.sh
 ```
+
+Repositorio: <https://github.com/NeriVice/deepseek-harness-installer>
 
 ### Después de instalar
 
-Abre **DeepSeek Harness** desde el menú Inicio o el escritorio, o escribe en una
-terminal:
+Abre una terminal nueva (para que el PATH se recargue) y ejecuta:
 
-```bat
+```bash
 dsh web
 ```
 
-Se abrirá la interfaz web en `http://127.0.0.1:3080`. La primera vez te pedirá
+Luego abre en el navegador **http://127.0.0.1:3080**. La primera vez te pedirá
 configurar tu API key de DeepSeek desde la propia interfaz.
+
+También puedes lanzarlo desde el menú de aplicaciones buscando
+**DeepSeek Harness**.
 
 ### Mantenerlo siempre actualizado
 
-Ejecuta el acceso directo **Actualizar DeepSeek Harness** (o vuelve a ejecutar el
-instalador). Ambos repiten `npm install -g @deepseek-ai/dsh@latest`, por lo que
-siempre instalan la versión más reciente.
-
-También puedes actualizar manualmente desde una terminal:
-
-```bat
-npm install -g @deepseek-ai/dsh@latest
+```bash
+dsh-update
 ```
 
-## Modos
+(equivale a `npm install -g @deepseek-ai/dsh@latest`, es decir, siempre la
+última versión).
 
-```powershell
-installer\install-dsh.ps1 -Mode Install    # instala / actualiza (por defecto)
-installer\install-dsh.ps1 -Mode Update     # solo actualiza a la última versión
-installer\install-dsh.ps1 -Mode Uninstall  # desinstala dsh (conserva ~/.dsh)
+### Desinstalar
+
+```bash
+dsh-uninstall
 ```
+
+> `dsh-uninstall` quita el CLI y los accesos creados, pero **no** elimina
+> Node.js (por si lo usas para otras cosas).
 
 ## Requisitos
 
-- Windows 10 o Windows 11 (PowerShell 5.1 incluido).
+- Linux (x64 o arm64).
+- `curl` (o `wget`) y `tar`.
 - Conexión a internet (para `nodejs.org` y `registry.npmjs.org`).
-- El instalador gestiona Node.js automáticamente; no necesitas instalarlo antes.
 
-> Si estás detrás de un firewall o en una red que requiere un mirror de npm,
-> configura el registro antes de ejecutar, por ejemplo:
-> `npm config set registry https://registry.npmmirror.com`
+Node.js lo gestiona el propio instalador; no necesitas instalarlo antes.
 
-## Registro de instalación
+## Nota sobre el aviso de `allow-scripts` (npm 11+)
 
-Todo lo que ocurre queda en:
+Con npm 11 o superior es normal ver un aviso como:
 
 ```
-%LOCALAPPDATA%\DeepSeekHarness\install.log
+npm warn allow-scripts 5 packages have install scripts not yet covered by allowScripts:
 ```
 
-Si algo falla, abre ese archivo para ver el detalle.
+**Es inofensivo en Linux.** Ese aviso se refiere a scripts de instalación de
+módulos nativos que, en Linux, no son necesarios porque DeepSeek Harness ya
+distribuye los binarios precompilados para `linux-x64` y `linux-arm64`
+(verificado: `dsh web` arranca correctamente sin ejecutarlos).
 
-## Recompilar el ejecutable (.exe)
-
-El `.exe` se genera con **Go** (se compila en Linux/macOS/Windows sin
-dependencias y produce un binario de Windows autocontenido). Requiere Go ≥ 1.20:
-
-```bash
-./build.sh            # genera x64 y arm64 en dist/
-./build.sh x64        # solo x64
-./build.sh arm64      # solo arm64
-```
-
-Estructura:
+## Estructura del proyecto
 
 ```
+install-dsh.sh        # ← instalador de Linux (el que necesitas)
+README.md
 installer/
-  main.go          # envoltura .exe: incrusta y ejecuta el script PowerShell
-  install-dsh.ps1  # lógica real (Node + npm install @latest + accesos directos)
+  install-dsh.ps1     # instalador de Windows (PowerShell)
+  main.go             # envoltura .exe de Windows (Go)
   go.mod
-build.sh           # compila dist/DeepSeek-Harness-Setup-*.exe
-install-dsh.cmd    # alternativa .cmd para ejecutar el script sin compilar
-dist/              # ejecutables .exe generados
+build.sh              # recompila los .exe de Windows
+install-dsh.cmd       # alternativa .cmd de Windows
+dist/                 # artefactos generados (exe + instalador Linux)
 ```
+
+> Los archivos de Windows (`installer/`, `build.sh`, `install-dsh.cmd`, y los
+> `.exe` de `dist/`) se conservan por si en algún momento los necesitas, pero
+> **el instalador principal de este proyecto es `install-dsh.sh` (Linux)**.
 
 ## Aviso
 
