@@ -1,0 +1,9 @@
+# OS junk
+.DS_Store
+Thumbs.db
+*.log
+
+# Node/npm junk (por si acabas regenerando)
+node_modules/
+
+# Nada de lo demás se ignora: los .exe de dist/ van incluidos a propósito
