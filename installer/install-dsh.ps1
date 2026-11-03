@@ -13,7 +13,7 @@
   Install (por defecto), Update o Uninstall.
 
 .PARAMETER NodeMinVersion
-  Version minima de Node.js requerida (por defecto 22.0.0).
+  Version minima de Node.js requerida (por defecto 22.19.0).
 
 .PARAMETER SkipNode
   No comprobar ni instalar Node.js.
@@ -24,7 +24,7 @@ param(
     [ValidateSet('Install', 'Update', 'Uninstall')]
     [string]$Mode = 'Install',
 
-    [string]$NodeMinVersion = '22.0.0',
+    [string]$NodeMinVersion = '22.19.0',
 
     [switch]$SkipNode
 )

@@ -10,13 +10,22 @@ versión disponible**.
 > nativos precompilados** (node-pty, koffi, sharp, sherpa-onnx…), por lo que no
 > hace falta compilador ni `sudo`.
 
+> ⚠️ **Node.js 22.19 o superior.** `dsh` depende de paquetes que exigen Node 22+
+> (`commander@15`, `undici@8`, `execa@10`…). Con Node 18 o 20 — los que suelen
+> traer Ubuntu/Mint por defecto — `npm` *instala* el paquete, pero después `dsh`
+> no arranca: verás avisos `EBADENGINE ("Unsupported engine")` y errores de
+> sintaxis. Este instalador detecta la versión y, si no sirve, instala la última
+> **LTS de Node en `~/.local`** (sin `sudo`) y hace que todos los lanzadores usen
+> **esa** ruta absoluta, para que el orden del `PATH` (nvm, apt…) no lo rompa.
+
 ## Qué hace el instalador
 
 Al ejecutar `install-dsh.sh` se realiza, de forma automática:
 
-1. **Comprueba Node.js.** Si no está instalado o es anterior a 18, descarga e
-   instala la **última versión LTS** de Node en `~/.local` (sin `sudo`, sirve
-   para cualquier distribución y arquitectura x64/arm64).
+1. **Comprueba Node.js.** Si no está instalado o es anterior a **22.19**, descarga
+   e instala la **última versión LTS** de Node en `~/.local` (sin `sudo`, sirve
+   para cualquier distribución y arquitectura x64/arm64). Los lanzadores usan la
+   ruta absoluta de ese Node, así que un Node viejo en el `PATH` ya no rompe nada.
 2. **Instala la última versión de DeepSeek Harness** con
    `npm install -g @deepseek-ai/dsh@latest`. El tag `@latest` garantiza que
    siempre se obtenga la versión más reciente publicada por DeepSeek.
@@ -83,7 +92,17 @@ dsh-uninstall
 - `curl` (o `wget`) y `tar`.
 - Conexión a internet (para `nodejs.org` y `registry.npmjs.org`).
 
-Node.js lo gestiona el propio instalador; no necesitas instalarlo antes.
+Node.js lo gestiona el propio instalador (necesita **22.19 o superior**); no
+necesitas instalarlo antes. Si ya tienes un Node válido, se usa ese; si no, se
+instala la última LTS en `~/.local`.
+
+### ¿Por qué no sirve cualquier Node?
+
+`@deepseek-ai/dsh` trae dependencias modernas (`commander@15`, `undici@8`,
+`execa@10`, `openai@7`…) que declaran `engines.node >= 22.19`. Con Node 18/20,
+`npm install -g` termina (solo con avisos `EBADENGINE`), pero al arrancar `dsh`
+falla con errores de sintaxis. Por eso el instalador **comprueba la versión
+antes de instalar** y usa siempre un Node compatible.
 
 ## Nota sobre el aviso de `allow-scripts` (npm 11+)
 
